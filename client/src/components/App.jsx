@@ -19,11 +19,11 @@ class App extends React.Component {
   // create a search function
   // get current text in input
   // setstate for searchText
-  inputBar(component, event) {
-    if (component === 'search') {
+  inputBar(type, event) {
+    if (type === 'search') {
       console.log(event.target.value)
       this.setState({searchText: event.target.value});
-    } else if (component === 'add') {
+    } else if (type === 'add') {
       console.log('add', event.target.value)
       this.setState({addText: event.target.value});
     }

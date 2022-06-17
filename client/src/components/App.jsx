@@ -42,7 +42,9 @@ class App extends React.Component {
       }
     }
     if (matchedList.length === 0) {
-      matchedList.push({title: 'no movie by that name found'});
+      matchedList.push({title: 'no movie by that name found',
+
+    });
     }
     this.setState({matches: matchedList});
   }
@@ -52,12 +54,77 @@ class App extends React.Component {
   // push movie that we want in all movies
   // set state for all movies to copy
   addMovies() {
+    for (let i = 0; i < this.state.allMovies.length; i++) {
+      if (this.state.addText.toLowerCase() === this.state.allMovies[i].title.toLowerCase()) {
+        alert('Movie is already in the list bozo');
+        return;
+      }
+    }
+    if (this.state.addText !== '') {
+      var copy = this.state.allMovies.slice();
+      copy.push({
+        title: this.state.addText,
+        watched: false
+      });
+      this.setState({
+        allMovies: copy,
+        matches: copy
+      });
+    }
+  }
+
+  toggleWatch(title) {
+    // create new copy of all movies
+    // loop through all movies
+    // match movie title with current movie
+    // delete movie from list
+    // push title of movie and watched to true in copy
+    // set state of all movies
+    var newObj = {};
     var copy = this.state.allMovies.slice();
-    copy.push({title: this.state.addText});
+    for (let i = 0; i < copy.length; i++) {
+      if (!copy[i].watched && copy[i].title === title) {
+        newObj.title = title;
+        newObj.watched = true;
+        copy.splice(i, 1, newObj);
+      } else if (copy[i].watched && copy[i].title === title) {
+        newObj.title = title;
+        newObj.watched = false;
+        copy.splice(i, 1, newObj);
+      }
+    }
     this.setState({
       allMovies: copy,
       matches: copy
     });
+  }
+
+  renderAllMovies() {
+    this.setState({matches: this.state.allMovies})
+  }
+
+  watched() {
+    var copy = this.state.allMovies.slice();
+    var watched = [];
+    for (let i = 0; i < copy.length; i++) {
+      if (copy[i].watched) {
+        watched.push(copy[i]);
+      }
+    }
+    this.setState({matches: watched});
+  }
+
+  toWatch() {
+    var copy = this.state.allMovies.slice();
+    var toWatch = [];
+    for (let i = 0; i < copy.length; i++) {
+      if (!copy[i].watched) {
+        console.log(copy[i]);
+        toWatch.push(copy[i]);
+      }
+    }
+    console.log(toWatch)
+    this.setState({matches: toWatch});
   }
 
   render() {
@@ -67,7 +134,6 @@ class App extends React.Component {
         <Search
         searchBar={this.inputBar.bind(this, 'search')}
         onSearch={this.changeList.bind(this, this.state.allMovies)}
-        movies={this.state.movieData}
         />
         <AddMovie
         movieBar={this.inputBar.bind(this, 'add')}
@@ -75,7 +141,12 @@ class App extends React.Component {
         state={this.state}
         />
         <MovieList
-        movies={this.state.matches}/>
+        renderToWatch={this.toWatch.bind(this)}
+        renderWatched={this.watched.bind(this)}
+        renderAll={this.renderAllMovies.bind(this)}
+        movies={this.state.matches}
+        watchedButton={this.toggleWatch.bind(this)}
+        />
       </div>
     )
   }
